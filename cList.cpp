@@ -1,96 +1,79 @@
 #include "cList.h"
+#include "cCell.h"
 #include <iostream>
 using namespace std;
+
+cList::cList()
+{
+    this->setFirst(nullptr);
+}
+
 
 //ДОБАВЛЕНИЕ ЭЛЕМЕНТА В СПИСОК
 void cList::push(int data)
 {
-    cList *ls = new cList;
-    ls->data = data;
-    ls->Next = NULL;
-    counter++;
-    if (!Head)
+    cCell *cell = new cCell;    // образуем пустую ячейку
+    cell->setD(data);           //кладем туда данные
+    if (first == nullptr)       //если 1-й элемент стека
     {
-        ls->Prev = NULL;
-        Head = ls;
-        Tail = Head;
-    } else
+        this->setFirst(cell);       //новая ячейка - первая
+        cell->setNext(nullptr);     //кладем в ячейку нуль-указатель
+    }else                           //если стек уже не пуст
     {
-        ls->Prev = Tail;       //Указываем, что предыдущим элементом списка относительно добавленного, будет последний элемент существующего списка
-        Tail->Next = ls;       //Следующий за последним существующим это непосредственно сейчас добавляемый элемент списка
-        Tail = ls;             //После того как указали что есть настоящий и что предыдущий, объявляем, что последний существующий это только что добавленный элемент
+        cell->setNext(this->getFirst());    //помещаем в указатель на следующий элемент адрес предудущей ячейки
+        this->setFirst(cell);               //теперь новая ячейка - первая
+    }
+    first = this->getFirst();      //test
+    cout << first->getD();        //test
+}
+
+int cList::pop()
+{
+    if(this->getFirst() != nullptr)              //если стек не пустой
+    {
+        cCell *first = this->getFirst();        //получаем первый элемент стека
+        if(first->getNext() != nullptr)             //если первый элемент - не единственный в стеке
+        {
+            int d = first->getD();                  //получаем данные удаляемой ячейки
+            this->setFirst(first->getNext());       //новый первый элемент - тот, что был вторым
+            delete first;                           //очищаем память
+            return d;                               //возвращаем данные удаляемого элемента
+        }else                                       //если в стеке 1 элемент
+        {
+            int d = first->getD();                  //получаем данные удаляемой ячейки
+            this->setFirst(nullptr);                //удаляем его
+            cout << "\nStack is empty.\n";          //test
+            return d;                               //возвращаем данные удаляемого элемента
+        }
+    }else                                           //если стек пуст
+    {
+        cout << "\nStack is empty.\n";
+        return false;
     }
 }
 
-//ПОКАЗЫВАЕТ СПИСОК НА ЭКРАНЕ
-void cList::Show()
+int cList::getFirstD()
 {
-    cList *t = Head;
-    while (t)
-    {
-        cout << t->data << " ";
-        t = t->Next;
-    }
-    cout << "\n\n";
+    cCell *first = this->getFirst();
+    return first->getD();
 }
 
-
-//фУНКЦИЯ УДАЛЕНИЯ КОНКРЕТНОГО ЭЛЕМЕНТА ДВУСВЯЗНОГО СПИСКА
-void cList::popN(int data)
+cCell* cList::getFirst()
 {
-    //Если удаляем первый элемент, то могут быть такие варианты
-    //В списке есть только первый, в списке есть несколько элементов
-    //Поэтому разбиваем логику выполнения
-    if ((data == 1) and (Head->Next))                   //Если удаляем первый, но есть и другие, то
-    {
-        cList *ls = Head;	                            //Указываем, что нам нужно начало списка
-        Head = Head->Next;	                            //Сдвигаем начало на следующий за началом элемент
-        Head->Prev = NULL;	                            //Делаем так, чтоб предыдущий началу элемент был пустым
-        delete ls;		                                //Удаляем удаляемое начало
-        counter--;		                                //Обязательно уменьшаем счетчик
-        return;		                                    //И выходим из функции
-    } else if ((data == 1) and (Head == Tail))          //Если удаляем первый, но в списке только 1 элемент
-    {
-        Head->Next = NULL;	                            //обнуляем все что нужно
-        Head = NULL;
-        delete Head;		                            //Удаляем указатель на начало
-        counter = 0;		                            //Обязательно обозначаем, что в списке ноль элементов
-        return;			                                //и выходим из функции
-    }
-
-    //Также может быть, что удаляемый элемент является последним элементом списка
-    if (data==counter)
-    {
-        cList *ls = Tail;	                            //Указываем, что нам нужен хвост
-        Tail = Tail->Prev;	                            //Отодвигаем хвост немного назад
-        Tail->Next = NULL;	                            //Обозначаем, что впереди за хвостом пусто
-        delete ls;	                                    //Очищаем память от бывшего хвоста
-        counter--;		                                //Обязательно уменьшаем счетчик элементов
-        return;		                                    //И выходим из функции
-    }
-
-    //Если же удаляемый элемент лежит где-то в середине списка, то тогда его можно удалить
-
-    cList *ls = Head, *ls2;                 //ls-Удаляемый элемент, ls2 , чтобы не потерять данные
-
-    for (int i = 0; i < data-1; i++)
-        ls = ls->Next;                      //Идем к адресу удаляемого элемента
-
-    ls2 = ls;	                            //Временно запоминаем адрес удаляемого элемента
-    ls2->Prev->Next = ls->Next;	            //Записываем данные, что следующий за перед сейчас удаляемым элементом - это следующий от удаляемого
-    ls2->Next->Prev = ls->Prev;             //а предыдущий для следующего - это предыдущий для удаляемого
-    delete ls;                              //теперь можно освободить память, удалив адрес на начало удаляемого элемента
-    counter--;                              //Обязательно уменьшаем число элементов в списке.
+    return this->first;
 }
 
-
-//ДЕСТРУКТОР ДЛЯ КОРРЕКТНОГО ВЫСВОБОЖДЕНИЯ ПАМЯТИ
-cList::~cList()
+void cList::setFirst(cCell *first)
 {
-    while (Head)
-    {
-        Tail=Head->Next;
-        delete Head;
-        Head=Tail;
-    }
+    this->first = first;
+}
+
+string cList::getName()
+{
+    return this->name;
+}
+
+void cList::setName(string name)
+{
+    this->name = name;
 }

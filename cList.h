@@ -1,18 +1,24 @@
 #ifndef CLIST_H
 #define CLIST_H
 #include <iostream>
+#include "cCell.h"
+using namespace std;
 
 class cList
-{                                                      //Список cList
-private:
-    int data,counter;
-    cList *Head, *Tail, *Next, *Prev;
+{
 public:
-    cList(): counter(0),Head(NULL),Tail(NULL){};     //Инициализация конструктором по умолчанию
-    void push(int);
-    void Show();
-    void popN(int);                                 //Функция принимает int параметр, обозначающий номер удаляемого элемента
+    cList();
+    void push(int data);
+    int pop();
+    int getFirstD();
+    cCell* getFirst();
+    void setFirst(cCell *first);
+    string getName();
+    void setName(string name);
     ~cList();
+private:
+    string name;
+    cCell *first, *next;
 };
 
 #endif // CLIST_H
