@@ -12,9 +12,9 @@ cList::cList()
 //ДОБАВЛЕНИЕ ЭЛЕМЕНТА В СПИСОК
 void cList::push(int data)
 {
-    cCell *cell = new cCell;    // образуем пустую ячейку
-    cell->setD(data);           //кладем туда данные
-    if (first == nullptr)       //если 1-й элемент стека
+    cCell *cell = new cCell;                 // образуем пустую ячейку
+    cell->setD(data);                        //кладем туда данные
+    if (this->getFirst() == nullptr)         //если 1-й элемент стека
     {
         this->setFirst(cell);       //новая ячейка - первая
         cell->setNext(nullptr);     //кладем в ячейку нуль-указатель
@@ -32,15 +32,14 @@ int cList::pop()
     if(this->getFirst() != nullptr)              //если стек не пустой
     {
         cCell *first = this->getFirst();        //получаем первый элемент стека
+        int d = first->getD();                  //получаем данные удаляемой ячейки
         if(first->getNext() != nullptr)             //если первый элемент - не единственный в стеке
         {
-            int d = first->getD();                  //получаем данные удаляемой ячейки
             this->setFirst(first->getNext());       //новый первый элемент - тот, что был вторым
             delete first;                           //очищаем память
             return d;                               //возвращаем данные удаляемого элемента
         }else                                       //если в стеке 1 элемент
         {
-            int d = first->getD();                  //получаем данные удаляемой ячейки
             this->setFirst(nullptr);                //удаляем его
             cout << "\nStack is empty.\n";          //test
             return d;                               //возвращаем данные удаляемого элемента
